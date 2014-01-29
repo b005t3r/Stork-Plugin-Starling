@@ -1,2 +1,2 @@
-Stork-Plugin-Starling
+Stork Starling Plugin
 =====================
