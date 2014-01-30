@@ -19,7 +19,7 @@
         </dependencies>
         <compiler-options>
           <map>
-            <entry key="compiler.keep-as3-metadata" value="LocalReference&#10;GlobalReference" />
+            <entry key="compiler.keep-as3-metadata" value="LocalReference&#10;GlobalReference&#10;StarlingReference" />
           </map>
         </compiler-options>
         <packaging-air-desktop use-generated-descriptor="false" custom-descriptor-path="$MODULE_DIR$/Main-app.xml" package-file-name="Main" />

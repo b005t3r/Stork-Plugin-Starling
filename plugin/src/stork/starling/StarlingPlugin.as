@@ -16,7 +16,9 @@ import starling.display.StorkRoot;
 import starling.events.Event;
 
 import stork.core.plugin.ScenePlugin;
+import stork.core.reference.ReferenceUtil;
 import stork.core.stork_internal;
+import stork.reference.StarlingReference;
 
 use namespace stork_internal;
 
@@ -25,6 +27,10 @@ public class StarlingPlugin extends ScenePlugin {
 
     private var _starling:Starling;
     private var _rootClass:Class;
+
+    /* static initializer */ {
+        ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
+    }
 
     public function StarlingPlugin(rootClass:Class) {
         super(PLUGIN_NAME);

@@ -19,9 +19,12 @@ public class Main extends StorkMain {
         scene.start();
 
         scene.addNode(new Stepper());
+        scene.addNode(new QuadHolder());
     }
 }
 }
+
+import starling.display.Quad;
 
 import stork.core.Node;
 import stork.event.Event;
@@ -38,5 +41,26 @@ class Stepper extends Node {
 
     private function onStep(event:SceneStepEvent):void {
         trace(event.dt);
+    }
+}
+
+class QuadHolder extends Node {
+    [StarlingReference("@starling.display::Quad")]
+    public var quad:Quad;
+
+    public function QuadHolder() {
+        super("Quad Holder");
+
+        addEventListener(Event.ADDED_TO_SCENE, onAddedToScene);
+    }
+
+    private function onAddedToScene(event:Event):void {
+        sceneNode.addEventListener(SceneStepEvent.STEP, step);
+    }
+
+    private function step(event:SceneStepEvent):void {
+        if(quad == null) return;
+
+        quad.x += 0.5;
     }
 }
