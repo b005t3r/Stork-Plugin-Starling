@@ -108,20 +108,20 @@ public class StarlingReference extends Reference {
         }
     }
 
-    private function findReferenced(container:DisplayObjectContainer):DisplayObject {
-        var child:DisplayObject = findReferencedImpl(container, 0);
+    private function findReferenced(container:DisplayObjectContainer, ignoredChild:DisplayObject = null):DisplayObject {
+        var child:DisplayObject = findReferencedImpl(container, 0, ignoredChild);
 
         return child;
     }
 
-    private function findReferencedImpl(container:DisplayObjectContainer, segmentIndex:int):DisplayObject {
+    private function findReferencedImpl(container:DisplayObjectContainer, segmentIndex:int, ignoredChild:DisplayObject):DisplayObject {
         var segment:CompiledReferenceSegment = _compiledSegments[segmentIndex];
 
         var count:int = container.numChildren;
         for(var i:int = 0; i < count; i++) {
             var child:DisplayObject = container.getChildAt(i);
 
-            if(/* child.beingRemoved || */ ! segment.matches(child))
+            if(/* child.beingRemoved || */ ignoredChild == child || ! segment.matches(child))
                 continue;
 
             // last segment
@@ -130,7 +130,7 @@ public class StarlingReference extends Reference {
             }
             // middle segment, has to be a ContainerNode
             else {
-                var nextChild:DisplayObject = findReferencedImpl(child as DisplayObjectContainer, segmentIndex + 1);
+                var nextChild:DisplayObject = findReferencedImpl(child as DisplayObjectContainer, segmentIndex + 1, ignoredChild);
 
                 if(nextChild != null)
                     return nextChild;
@@ -264,7 +264,7 @@ public class StarlingReference extends Reference {
         _referenced.removeEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencedRemovedFromStarlingStage);
 
         var root:StorkRoot      = _referenced.root as StorkRoot;
-        var child:DisplayObject = findReferenced(root);
+        var child:DisplayObject = findReferenced(root, _referenced);
 
         setReferenced(null);
 
