@@ -4,7 +4,7 @@
  * Time: 16:45
  */
 package stork.starling {
-import flash.display.StorkMain;
+import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.display3D.Context3DRenderMode;
@@ -26,38 +26,49 @@ public class StarlingPlugin extends ScenePlugin {
     public static const PLUGIN_NAME:String = "Stork-Plugin-Starling";
 
     private var _starling:Starling;
+
     private var _rootClass:Class;
+    private var _main:Sprite;
 
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
     }
 
-    public function StarlingPlugin(rootClass:Class) {
+    public function StarlingPlugin(rootClass:Class, main:Sprite) {
         super(PLUGIN_NAME);
 
         if(rootClass is StorkRoot)
             throw new ArgumentError("make sure your root class subclasses starling.display::StorkRootSprite");
 
         _rootClass = rootClass;
+        _main = main;
     }
 
     override public function activate():void {
-        if(StorkMain.instance == null)
+        if(_main == null)
             throw new UninitializedError("make sure your apps main class subclasses flash.display::StorkMain");
 
-        if (StorkMain.instance.stage)
+        if (_main.stage)
             init();
         else
-            StorkMain.instance.addEventListener(flash.events.Event.ADDED_TO_STAGE, init);
+            _main.addEventListener(flash.events.Event.ADDED_TO_STAGE, init);
+    }
+
+    // TODO: this is probably not the best implementation in the world, but it's currently only used by unit tests
+    override public function deactivate():void {
+        if(_starling != null) {
+            _starling.dispose();
+            _starling = null;
+        }
     }
 
     private function init(event:flash.events.Event = null):void {
-        StorkMain.instance.removeEventListener(flash.events.Event.ADDED_TO_STAGE, init);
+        _main.removeEventListener(flash.events.Event.ADDED_TO_STAGE, init);
 
-        StorkMain.instance.stage.scaleMode  = StageScaleMode.NO_SCALE;
-        StorkMain.instance.stage.align      = StageAlign.TOP_LEFT;
+        _main.stage.scaleMode  = StageScaleMode.NO_SCALE;
+        _main.stage.align      = StageAlign.TOP_LEFT;
 
-        _starling                       = new Starling(_rootClass, StorkMain.instance.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
+        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
         _starling.simulateMultitouch    = false;
         _starling.enableErrorChecking   = Capabilities.isDebugger;
         _starling.antiAliasing          = 0;

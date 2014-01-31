@@ -1,24 +1,24 @@
 package {
 
-import flash.display.StorkMain;
+import flash.display.Sprite;
 
 import stork.core.SceneNode;
 import stork.starling.StarlingPlugin;
 
 [SWF(width="800", height="600", backgroundColor="#aaaaaa", frameRate="60")]
-public class Main extends StorkMain {
+public class Main extends Sprite {
     var scene:SceneNode;
 
     public function Main() {
         scene = new SceneNode("Demo Scene");
 
-        var starlingPlugin:StarlingPlugin = new StarlingPlugin(SimpleDemoRoot);
+        var starlingPlugin:StarlingPlugin = new StarlingPlugin(SimpleDemoRoot, this);
 
         scene.registerPlugin(starlingPlugin);
 
         scene.start();
 
-        scene.addNode(new Stepper());
+        //scene.addNode(new Stepper());
         scene.addNode(new QuadHolder());
     }
 }
@@ -40,7 +40,7 @@ class Stepper extends Node {
     }
 
     private function onStep(event:SceneStepEvent):void {
-        trace(event.dt);
+        //trace(event.dt);
     }
 }
 
@@ -61,6 +61,6 @@ class QuadHolder extends Node {
     private function step(event:SceneStepEvent):void {
         if(quad == null) return;
 
-        quad.x += 0.5;
+        quad.x += 100 * event.dt;
     }
 }
