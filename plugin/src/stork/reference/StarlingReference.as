@@ -202,7 +202,7 @@ public class StarlingReference extends Reference {
                 root.removeEventListener(starling.events.Event.ADDED, onSomethingAddedToRoot);
             }
             else {
-                _referenced.removeEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencedRemovedFromStarlingStage);
+                _referenced.removeEventListener(starling.events.Event.REMOVED_FROM_STAGE, onReferencedRemovedFromStarlingStage);
                 setReferenced(null);
             }
         }
@@ -261,7 +261,7 @@ public class StarlingReference extends Reference {
     }
 
     private function onReferencedRemovedFromStarlingStage(event:starling.events.Event):void {
-        _referenced.removeEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencedRemovedFromStarlingStage);
+        _referenced.removeEventListener(starling.events.Event.REMOVED_FROM_STAGE, onReferencedRemovedFromStarlingStage);
 
         var root:StorkRoot      = _referenced.root as StorkRoot;
         var child:DisplayObject = findReferenced(root, _referenced);
