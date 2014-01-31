@@ -45,12 +45,17 @@ public class BallController extends Node {
         _ball.x += _xSpeed * event.dt;
         _ball.y += _ySpeed * event.dt;
 
-        if(_ball.y < PongDemoRoot.BALL_SIZE / 2 || _ball.y > PongDemoRoot.HEIGHT - PongDemoRoot.BALL_SIZE / 2)
-            _ySpeed *= -1;
+        if(_ball.y < PongDemoRoot.BALL_SIZE / 2 )
+            _ySpeed = _ySpeed < 0 ? -_ySpeed : _ySpeed;
 
-        if(_ball.x + PongDemoRoot.BALL_SIZE / 2 > _rightPaddle.x - PongDemoRoot.PADDLE_WIDTH / 2
-        || _ball.x - PongDemoRoot.BALL_SIZE / 2 < _leftPaddle.x + PongDemoRoot.PADDLE_WIDTH / 2)
-            _xSpeed *= -1;
+        if(_ball.y > PongDemoRoot.HEIGHT - PongDemoRoot.BALL_SIZE / 2)
+            _ySpeed = _ySpeed > 0 ? -_ySpeed : _ySpeed;
+
+        if(_ball.x + PongDemoRoot.BALL_SIZE / 2 > _rightPaddle.x - PongDemoRoot.PADDLE_WIDTH / 2)
+            _xSpeed = _xSpeed > 0 ? -_xSpeed : _xSpeed;
+
+        if(_ball.x - PongDemoRoot.BALL_SIZE / 2 < _leftPaddle.x + PongDemoRoot.PADDLE_WIDTH / 2)
+            _xSpeed = _xSpeed < 0 ? -_xSpeed : _xSpeed;
     }
 }
 }
