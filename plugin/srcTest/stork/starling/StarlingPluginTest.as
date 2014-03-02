@@ -20,7 +20,7 @@ import stork.core.ContainerNode;
 import stork.core.SceneNode;
 import stork.event.SceneEvent;
 
-import strok.test.SceneSetupCompleteEvent;
+import stork.test.SceneSetupCompleteEvent;
 
 public class StarlingPluginTest {
     private var scene:SceneNode;

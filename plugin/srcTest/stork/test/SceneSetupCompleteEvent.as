@@ -3,7 +3,7 @@
  * Date: 31/01/14
  * Time: 9:51
  */
-package strok.test {
+package stork.test {
 import flash.events.Event;
 
 public class SceneSetupCompleteEvent extends Event {
