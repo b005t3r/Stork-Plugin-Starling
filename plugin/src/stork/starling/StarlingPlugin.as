@@ -9,6 +9,7 @@ import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.display3D.Context3DRenderMode;
 import flash.events.Event;
+import flash.geom.Rectangle;
 import flash.system.Capabilities;
 
 import starling.core.Starling;
@@ -29,19 +30,21 @@ public class StarlingPlugin extends ScenePlugin {
 
     private var _rootClass:Class;
     private var _main:Sprite;
+    private var _viewPort:Rectangle;
 
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
     }
 
-    public function StarlingPlugin(rootClass:Class, main:Sprite) {
+    public function StarlingPlugin(rootClass:Class, main:Sprite, viewPort:Rectangle = null) {
         super(PLUGIN_NAME);
 
         if(rootClass is StorkRoot)
             throw new ArgumentError("make sure your root class subclasses starling.display::StorkRootSprite");
 
-        _rootClass = rootClass;
-        _main = main;
+        _rootClass  = rootClass;
+        _main       = main;
+        _viewPort   = viewPort;
     }
 
     override public function activate():void {
@@ -68,7 +71,7 @@ public class StarlingPlugin extends ScenePlugin {
         _main.stage.scaleMode  = StageScaleMode.NO_SCALE;
         _main.stage.align      = StageAlign.TOP_LEFT;
 
-        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
+        _starling                       = new Starling(_rootClass, _main.stage, _viewPort, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
         _starling.simulateMultitouch    = false;
         _starling.enableErrorChecking   = Capabilities.isDebugger;
         _starling.antiAliasing          = 0;
