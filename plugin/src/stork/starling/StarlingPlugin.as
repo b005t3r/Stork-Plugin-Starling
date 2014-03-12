@@ -77,6 +77,13 @@ public class StarlingPlugin extends ScenePlugin {
         _starling.enableErrorChecking   = Capabilities.isDebugger;
         _starling.antiAliasing          = 0;
 
+        _starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+        _starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
+
+        _starling.start();
+    }
+
+    private function onRootCreated(event:starling.events.Event):void {
         if(_resizePolicy != null) {
             var viewPort:Rectangle = new Rectangle();
 
@@ -85,13 +92,6 @@ public class StarlingPlugin extends ScenePlugin {
             _starling.viewPort = viewPort;
         }
 
-        _starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
-        _starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
-
-        _starling.start();
-    }
-
-    private function onRootCreated(event:starling.events.Event):void {
         var root:StorkRoot = _starling.root as StorkRoot;
 
         root.stork_internal::setSceneNode(sceneNode);
@@ -102,11 +102,11 @@ public class StarlingPlugin extends ScenePlugin {
     }
 
     private function onResize(event:ResizeEvent):void {
-        if(_resizePolicy == null) return;
+        if(_starling.root == null || _resizePolicy == null) return;
 
         var viewPort:Rectangle = new Rectangle();
 
-        _resizePolicy.resize(_starling.stage, viewPort, _main.stage.stageWidth, _main.stage.stageHeight);
+        _resizePolicy.resize(_starling.stage, viewPort, event.width, event.height);
 
         _starling.viewPort = viewPort;
     }
