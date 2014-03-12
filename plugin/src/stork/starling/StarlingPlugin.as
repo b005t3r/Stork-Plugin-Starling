@@ -15,6 +15,7 @@ import flash.system.Capabilities;
 import starling.core.Starling;
 import starling.display.StorkRoot;
 import starling.events.Event;
+import starling.events.ResizeEvent;
 
 import stork.core.plugin.ScenePlugin;
 import stork.core.reference.ReferenceUtil;
@@ -30,21 +31,21 @@ public class StarlingPlugin extends ScenePlugin {
 
     private var _rootClass:Class;
     private var _main:Sprite;
-    private var _viewPort:Rectangle;
+    private var _resizePolicy:IStageResizePolicy;
 
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
     }
 
-    public function StarlingPlugin(rootClass:Class, main:Sprite, viewPort:Rectangle = null) {
+    public function StarlingPlugin(rootClass:Class, main:Sprite, resizePolicy:IStageResizePolicy = null) {
         super(PLUGIN_NAME);
 
         if(rootClass is StorkRoot)
             throw new ArgumentError("make sure your root class subclasses starling.display::StorkRootSprite");
 
-        _rootClass  = rootClass;
-        _main       = main;
-        _viewPort   = viewPort;
+        _rootClass      = rootClass;
+        _main           = main;
+        _resizePolicy   = resizePolicy;
     }
 
     override public function activate():void {
@@ -71,12 +72,21 @@ public class StarlingPlugin extends ScenePlugin {
         _main.stage.scaleMode  = StageScaleMode.NO_SCALE;
         _main.stage.align      = StageAlign.TOP_LEFT;
 
-        _starling                       = new Starling(_rootClass, _main.stage, _viewPort, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
+        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
         _starling.simulateMultitouch    = false;
         _starling.enableErrorChecking   = Capabilities.isDebugger;
         _starling.antiAliasing          = 0;
 
+        if(_resizePolicy != null) {
+            var viewPort:Rectangle = new Rectangle();
+
+            _resizePolicy.resize(_starling.stage, viewPort, _main.stage.stageWidth, _main.stage.stageHeight);
+
+            _starling.viewPort = viewPort;
+        }
+
         _starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+        _starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
 
         _starling.start();
     }
@@ -89,6 +99,16 @@ public class StarlingPlugin extends ScenePlugin {
         sceneNode.addObject(root, StorkRoot.OBJECT_NAME);
 
         fireActivatedEvent();
+    }
+
+    private function onResize(event:ResizeEvent):void {
+        if(_resizePolicy == null) return;
+
+        var viewPort:Rectangle = new Rectangle();
+
+        _resizePolicy.resize(_starling.stage, viewPort, _main.stage.stageWidth, _main.stage.stageHeight);
+
+        _starling.viewPort = viewPort;
     }
 }
 }
