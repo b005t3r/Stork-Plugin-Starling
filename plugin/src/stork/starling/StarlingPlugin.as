@@ -4,6 +4,7 @@
  * Time: 16:45
  */
 package stork.starling {
+import flash.desktop.NativeApplication;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
@@ -77,13 +78,6 @@ public class StarlingPlugin extends ScenePlugin {
         _starling.enableErrorChecking   = Capabilities.isDebugger;
         _starling.antiAliasing          = 0;
 
-        _starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
-        _starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
-
-        _starling.start();
-    }
-
-    private function onRootCreated(event:starling.events.Event):void {
         if(_resizePolicy != null) {
             var viewPort:Rectangle = new Rectangle();
 
@@ -92,6 +86,16 @@ public class StarlingPlugin extends ScenePlugin {
             _starling.viewPort = viewPort;
         }
 
+        _starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+        _starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
+
+        NativeApplication.nativeApplication.addEventListener(flash.events.Event.ACTIVATE, onActivate);
+        NativeApplication.nativeApplication.addEventListener(flash.events.Event.DEACTIVATE, onDeactivate);
+
+        _starling.start();
+    }
+
+    private function onRootCreated(event:starling.events.Event):void {
         var root:StorkRoot = _starling.root as StorkRoot;
 
         root.stork_internal::setSceneNode(sceneNode);
@@ -110,5 +114,8 @@ public class StarlingPlugin extends ScenePlugin {
 
         _starling.viewPort = viewPort;
     }
+
+    private function onActivate(event:flash.events.Event):void { _starling.start(); }
+    private function onDeactivate(event:flash.events.Event):void { _starling.stop(true); }
 }
 }

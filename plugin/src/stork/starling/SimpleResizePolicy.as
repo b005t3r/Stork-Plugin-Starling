@@ -6,8 +6,6 @@
 package stork.starling {
 import flash.geom.Rectangle;
 
-import starling.core.Starling;
-
 import starling.display.Stage;
 
 public class SimpleResizePolicy implements IStageResizePolicy {

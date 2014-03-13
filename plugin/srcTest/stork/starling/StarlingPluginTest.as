@@ -19,7 +19,6 @@ import starling.utils.Color;
 import stork.core.ContainerNode;
 import stork.core.SceneNode;
 import stork.event.SceneEvent;
-
 import stork.test.SceneSetupCompleteEvent;
 
 public class StarlingPluginTest {
