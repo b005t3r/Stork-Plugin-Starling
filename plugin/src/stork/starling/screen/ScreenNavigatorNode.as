@@ -28,7 +28,7 @@ public class ScreenNavigatorNode extends ContainerNode {
         addEventListener(Event.ADDED_TO_PARENT, onChildAdded);
     }
 
-    public function get display():DisplayObjectContainer { throw new Error("abstract method call"); }
+    public function get displayContainer():DisplayObjectContainer { throw new Error("abstract method call"); }
 
     public function pushScreen(screen:ScreenNode, animated:Boolean):void {
         if(_transitionActive)
@@ -36,7 +36,7 @@ public class ScreenNavigatorNode extends ContainerNode {
 
         addNode(screen);
 
-        presentScreen(screen, animated, true, true);
+        presentScreen(screen, animated, animated, true);
     }
 
     public function popScreen(animated:Boolean):ScreenNode {
@@ -51,14 +51,14 @@ public class ScreenNavigatorNode extends ContainerNode {
         var prevScreen:ScreenNode = previousScreen;
 
         if(prevScreen != null) {
-            display.addChild(prevScreen.display);
-            prevScreen.setUpDisplay(display.width, display.height);
+            displayContainer.addChild(prevScreen.display);
+            prevScreen.setUpDisplay(displayContainer.width, displayContainer.height);
 
             // the one we just added has to go below the current one
-            display.swapChildren(prevScreen.display, screen.display);
+            displayContainer.swapChildren(prevScreen.display, screen.display);
         }
 
-        dismissScreen(screen, animated, true);
+        dismissScreen(screen, animated, animated);
 
         return screen;
     }
@@ -140,8 +140,8 @@ public class ScreenNavigatorNode extends ContainerNode {
         _transitionAnimated = transition;
 
         if(setUpDisplay) {
-            display.addChild(screen.display);
-            screen.setUpDisplay(display.width, display.height);
+            displayContainer.addChild(screen.display);
+            screen.setUpDisplay(displayContainer.width, displayContainer.height);
         }
 
         screen.addEventListener(ScreenEvent.ACTIVATED, onScreenActivated);
