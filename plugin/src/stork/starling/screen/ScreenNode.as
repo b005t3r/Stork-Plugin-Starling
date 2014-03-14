@@ -18,6 +18,8 @@ public class ScreenNode extends Node {
         super(name);
     }
 
+    public function get navigator():ScreenNavigatorNode { return parentNode as ScreenNavigatorNode; }
+
     public function get active():Boolean { throw new Error("abstract method call"); }
     public function get display():DisplayObject { throw new Error("abstract method call");  }
 

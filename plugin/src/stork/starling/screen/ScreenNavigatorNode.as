@@ -19,6 +19,8 @@ public class ScreenNavigatorNode extends ContainerNode {
     private var _removeScreenTransitionCompleteEvent:ScreenNavigatorEvent = new ScreenNavigatorEvent(ScreenNavigatorEvent.REMOVE_SCREEN_TRANSITION_COMPLETE);
 
     private var _transitionActive:Boolean;
+    private var _screenAnimated:Boolean;
+    private var _transitionAnimated:Boolean;
 
     public function ScreenNavigatorNode(name:String = "ScreenNavigator") {
         super(name);
@@ -32,47 +34,31 @@ public class ScreenNavigatorNode extends ContainerNode {
         if(_transitionActive)
             throw new IllegalOperationError("adding a new screen before current transition completes");
 
-        _transitionActive = true;
-
         addNode(screen);
 
-        display.addChild(screen.display);
-        screen.setUpDisplay(display.width, display.height);
-
-        screen.addEventListener(ScreenEvent.ACTIVATED, onScreenActivated);
-
-        if(! animated) {
-            screen.activate(false);
-
-            if(! screen.active)
-                throw new Error("screen has to become active synchronously when not animated");
-        }
-        else {
-            addEventListener(ScreenNavigatorEvent.ADD_SCREEN_TRANSITION_COMPLETE, onAddScreenTransitionComplete);
-            beginAddScreenTransition(screen);
-        }
+        presentScreen(screen, animated, true, true);
     }
 
     public function popScreen(animated:Boolean):ScreenNode {
         if(_transitionActive)
             throw new IllegalOperationError("adding a new screen before current transition completes");
 
-        _transitionActive = true;
+        var screen:ScreenNode = currentScreen;
 
-        var screen:ScreenNode = getNodeAt(nodeCount - 1) as ScreenNode;
+        if(screen == null)
+            throw new IllegalOperationError("screen stack is empty");
 
-        screen.addEventListener(ScreenEvent.DEACTIVATED, onScreenDeactivated);
+        var prevScreen:ScreenNode = previousScreen;
 
-        if(! animated) {
-            screen.deactivate(animated);
+        if(prevScreen != null) {
+            display.addChild(prevScreen.display);
+            prevScreen.setUpDisplay(display.width, display.height);
 
-            if(screen.active)
-                throw new Error("screen has to become inactive synchronously when not animated");
+            // the one we just added has to go below the current one
+            display.swapChildren(prevScreen.display, screen.display);
         }
-        else {
-            addEventListener(ScreenNavigatorEvent.REMOVE_SCREEN_TRANSITION_COMPLETE, onRemoveScreenTransitionComplete);
-            beginRemoveScreenTransition(screen);
-        }
+
+        dismissScreen(screen, animated, true);
 
         return screen;
     }
@@ -106,32 +92,89 @@ public class ScreenNavigatorNode extends ContainerNode {
 
         if(! event.screen.active)
             throw new Error("screen has to become active before sending ScreenEvent.ACTIVATED event");
+
+        var prevScreen:ScreenNode = previousScreen;
+
+        if(prevScreen == null || ! prevScreen.active) return;
+
+        dismissScreen(prevScreen, false, false);
     }
 
     protected function onScreenDeactivated(event:ScreenEvent):void {
-        event.screen.removeEventListener(ScreenEvent.DEACTIVATED, onScreenDeactivated);
+        var screen:ScreenNode = event.screen;
+
+        screen.removeEventListener(ScreenEvent.DEACTIVATED, onScreenDeactivated);
 
         _transitionActive = false;
 
-        if(event.screen.active)
+        if(screen.active)
             throw new Error("screen has to become inactive before sending ScreenEvent.DEACTIVATED event");
 
-        event.screen.cleanUpDisplay();
-        event.screen.display.removeFromParent();
+        screen.cleanUpDisplay();
+        screen.display.removeFromParent();
 
-        removeNode(event.screen);
+        if(currentScreen != screen) return;
+
+        removeNode(screen);
+
+        // current screen has changed
+        if(currentScreen != null)
+            presentScreen(currentScreen, _screenAnimated, false, false);
     }
 
     protected function onAddScreenTransitionComplete(event:ScreenNavigatorEvent):void {
         removeEventListener(ScreenNavigatorEvent.ADD_SCREEN_TRANSITION_COMPLETE, onAddScreenTransitionComplete);
 
-        currentScreen.activate(true);
+        currentScreen.activate(_screenAnimated);
     }
 
     protected function onRemoveScreenTransitionComplete(event:ScreenNavigatorEvent):void {
         removeEventListener(ScreenNavigatorEvent.REMOVE_SCREEN_TRANSITION_COMPLETE, onRemoveScreenTransitionComplete);
 
-        currentScreen.deactivate(true);
+        currentScreen.deactivate(_screenAnimated);
+    }
+
+    private function presentScreen(screen:ScreenNode, animated:Boolean, transition:Boolean, setUpDisplay:Boolean):void {
+        _transitionActive   = true;
+        _screenAnimated     = animated;
+        _transitionAnimated = transition;
+
+        if(setUpDisplay) {
+            display.addChild(screen.display);
+            screen.setUpDisplay(display.width, display.height);
+        }
+
+        screen.addEventListener(ScreenEvent.ACTIVATED, onScreenActivated);
+
+        if(! transition) {
+            screen.activate(animated);
+
+            if(! animated && ! screen.active)
+                throw new Error("screen has to become active synchronously when not animated");
+        }
+        else {
+            addEventListener(ScreenNavigatorEvent.ADD_SCREEN_TRANSITION_COMPLETE, onAddScreenTransitionComplete);
+            beginAddScreenTransition(screen);
+        }
+    }
+
+    private function dismissScreen(screen:ScreenNode, animated:Boolean, transition:Boolean):void {
+        _transitionActive   = true;
+        _screenAnimated     = animated;
+        _transitionAnimated = transition;
+
+        screen.addEventListener(ScreenEvent.DEACTIVATED, onScreenDeactivated);
+
+        if(! transition) {
+            screen.deactivate(animated);
+
+            if(! animated && screen.active)
+                throw new Error("screen has to become inactive synchronously when not animated");
+        }
+        else {
+            addEventListener(ScreenNavigatorEvent.REMOVE_SCREEN_TRANSITION_COMPLETE, onRemoveScreenTransitionComplete);
+            beginRemoveScreenTransition(screen);
+        }
     }
 
     private function onChildAdded(event:Event):void {
