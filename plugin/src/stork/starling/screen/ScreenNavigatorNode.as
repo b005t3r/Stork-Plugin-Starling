@@ -14,11 +14,6 @@ import stork.event.Event;
 import stork.event.ScreenTransitionEvent;
 
 public class ScreenNavigatorNode extends ContainerNode {
-    public static function DEFAULT_TRANSITION(owner:ScreenNavigatorNode, oldScreen:ScreenNode, newScreen:ScreenNode, onComplete:Function):void {
-        onComplete();
-    }
-
-    private var _transitionFunction:Function = DEFAULT_TRANSITION;
     private var _currentTransition:Transition;
 
     public function ScreenNavigatorNode(name:String = "ScreenNavigator") {
@@ -28,14 +23,12 @@ public class ScreenNavigatorNode extends ContainerNode {
         addEventListener(ScreenTransitionEvent.TRANSITION_COMPLETE, onTransitionComplete);
     }
 
+    public function get inTransition():Boolean { return _currentTransition != null; }
+
     public function get displayContainer():DisplayObjectContainer { throw new Error("abstract method call"); }
 
-    public function get transitionFunction():Function { return _transitionFunction; }
-    public function set transitionFunction(value:Function):void {
-        _transitionFunction = value;
-
-        if(_transitionFunction == null)
-            _transitionFunction = DEFAULT_TRANSITION;
+    public function transition(oldScreen:ScreenNode, newScreen:ScreenNode, onComplete:Function):void {
+        onComplete();
     }
 
     public function pushScreen(screen:ScreenNode, animated:Boolean):void {
@@ -82,6 +75,7 @@ public class ScreenNavigatorNode extends ContainerNode {
     }
 
     private function onTransitionComplete(event:ScreenTransitionEvent):void {
+        // TODO: this should be set to null before dispatching this event
         _currentTransition = null;
     }
 }
@@ -134,7 +128,7 @@ class Transition {
         owner.displayContainer.addChild(newScreen.display);
         newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
 
-        owner.transitionFunction(owner, oldScreen, newScreen, onPushTransitionComplete);
+        owner.transition(oldScreen, newScreen, onPushTransitionComplete);
     }
 
     private function onPushTransitionComplete():void {
@@ -163,7 +157,7 @@ class Transition {
             newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
         }
 
-        owner.transitionFunction(owner, oldScreen, newScreen, onPopTransitionComplete);
+        owner.transition(oldScreen, newScreen, onPopTransitionComplete);
     }
 
     private function onPopTransitionComplete():void {
