@@ -161,6 +161,8 @@ class Transition {
     }
 
     private function onPopTransitionComplete():void {
+        oldScreen.cleanUpDisplay();
+        oldScreen.display.removeFromParent();
         owner.removeNode(oldScreen);
 
         if(newScreen != null) {
