@@ -34,11 +34,15 @@ public class StarlingPlugin extends ScenePlugin {
     private var _main:Sprite;
     private var _resizePolicy:IStageResizePolicy;
 
+    private var _simulateMultitouch:Boolean;
+    private var _enableErrorChecking:Boolean;
+    private var _antiAliasing:int;
+
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
     }
 
-    public function StarlingPlugin(rootClass:Class, main:Sprite, resizePolicy:IStageResizePolicy = null) {
+    public function StarlingPlugin(rootClass:Class, main:Sprite, resizePolicy:IStageResizePolicy = null, simulateMultitouch:Boolean = false, enableErrorChecking:Boolean = false, antiAliasing:int = 0) {
         super(PLUGIN_NAME);
 
         if(rootClass is StorkRoot)
@@ -47,6 +51,10 @@ public class StarlingPlugin extends ScenePlugin {
         _rootClass      = rootClass;
         _main           = main;
         _resizePolicy   = resizePolicy;
+
+        _simulateMultitouch     = simulateMultitouch;
+        _enableErrorChecking    = enableErrorChecking;
+        _antiAliasing           = antiAliasing;
     }
 
     override public function activate():void {
@@ -73,10 +81,11 @@ public class StarlingPlugin extends ScenePlugin {
         _main.stage.scaleMode  = StageScaleMode.NO_SCALE;
         _main.stage.align      = StageAlign.TOP_LEFT;
 
+        Starling.multitouchEnabled      = true;
         _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
-        _starling.simulateMultitouch    = false;
-        _starling.enableErrorChecking   = Capabilities.isDebugger;
-        _starling.antiAliasing          = 0;
+        _starling.simulateMultitouch    = _simulateMultitouch;
+        _starling.enableErrorChecking   = _enableErrorChecking;
+        _starling.antiAliasing          = _antiAliasing;
 
         if(_resizePolicy != null) {
             var viewPort:Rectangle = new Rectangle();
