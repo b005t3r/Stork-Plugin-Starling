@@ -87,10 +87,13 @@ import stork.starling.screen.ScreenNavigatorNode;
 import stork.starling.screen.ScreenNode;
 
 class Transition {
-    public var owner:ScreenNavigatorNode;
-    public var oldScreen:ScreenNode;
-    public var newScreen:ScreenNode;
-    public var animated:Boolean;
+    private var owner:ScreenNavigatorNode;
+    private var oldScreen:ScreenNode;
+    private var newScreen:ScreenNode;
+    private var animated:Boolean;
+
+    private var oldScreenTouchable:Boolean;
+    private var newScreenTouchable:Boolean;
 
     public function Transition(owner:ScreenNavigatorNode, oldScreen:ScreenNode, newScreen:ScreenNode, animated:Boolean) {
         this.owner      = owner;
@@ -103,6 +106,9 @@ class Transition {
         // pushing a new screen
         if(newScreen != null && owner.getNodeIndex(newScreen) < 0) {
             if(oldScreen != null) {
+                oldScreenTouchable = oldScreen.display.touchable;
+                oldScreen.display.touchable = false;
+
                 oldScreen.addEventListener(ScreenEvent.DEACTIVATED, onPushScreenDeactivated);
                 oldScreen.deactivate(animated);
             }
@@ -112,6 +118,9 @@ class Transition {
         }
         // popping an old screen
         else {
+            oldScreenTouchable = oldScreen.display.touchable;
+            oldScreen.display.touchable = false;
+
             oldScreen.addEventListener(ScreenEvent.DEACTIVATED, onPopScreenDeactivated);
             oldScreen.deactivate(animated);
         }
@@ -128,6 +137,9 @@ class Transition {
         owner.displayContainer.addChild(newScreen.display);
         newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
 
+        newScreenTouchable = newScreen.display.touchable;
+        newScreen.display.touchable = false;
+
         owner.transition(oldScreen, newScreen, onPushTransitionComplete);
     }
 
@@ -135,6 +147,7 @@ class Transition {
         if(oldScreen != null) {
             oldScreen.cleanUpDisplay();
             oldScreen.display.removeFromParent();
+            oldScreen.display.touchable = oldScreenTouchable;
         }
 
         newScreen.addEventListener(ScreenEvent.ACTIVATED, onPushScreenActivated);
@@ -143,6 +156,8 @@ class Transition {
 
     private function onPushScreenActivated(event:ScreenEvent):void {
         newScreen.removeEventListener(ScreenEvent.ACTIVATED, onPushScreenActivated);
+
+        newScreen.display.touchable = newScreenTouchable;
 
         owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen));
     }
@@ -155,6 +170,9 @@ class Transition {
         if(newScreen != null) {
             owner.displayContainer.addChild(newScreen.display);
             newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
+
+            newScreenTouchable = newScreen.display.touchable;
+            newScreen.display.touchable = false;;
         }
 
         owner.transition(oldScreen, newScreen, onPopTransitionComplete);
@@ -163,6 +181,8 @@ class Transition {
     private function onPopTransitionComplete():void {
         oldScreen.cleanUpDisplay();
         oldScreen.display.removeFromParent();
+        oldScreen.display.touchable = oldScreenTouchable;
+
         owner.removeNode(oldScreen);
 
         if(newScreen != null) {
@@ -175,8 +195,10 @@ class Transition {
     }
 
     private function onPopScreenActivated(event:ScreenEvent = null):void {
-        if(newScreen != null)
+        if(newScreen != null) {
             newScreen.removeEventListener(ScreenEvent.ACTIVATED, onPopScreenActivated);
+            newScreen.display.touchable = newScreenTouchable;
+        }
 
         owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen));
     }
