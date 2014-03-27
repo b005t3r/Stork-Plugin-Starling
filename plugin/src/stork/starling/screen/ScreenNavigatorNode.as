@@ -172,7 +172,7 @@ class Transition {
             newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
 
             newScreenTouchable = newScreen.display.touchable;
-            newScreen.display.touchable = false;;
+            newScreen.display.touchable = false;
         }
 
         owner.transition(oldScreen, newScreen, onPopTransitionComplete);
