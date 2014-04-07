@@ -95,6 +95,7 @@ public class StarlingReference extends Reference {
             // class name
             if(pathPart.charCodeAt(0) == "@".charCodeAt(0)) {
                 pathPart = pathPart.substr(1, pathPart.length - 1);
+                pathPart = getFullClassName(pathPart);
                 var clazz:Class = getDefinitionByName(pathPart) as Class;
 
                 segment = new CompiledReferenceSegment(CompiledReferenceSegment.CLASS, clazz);
