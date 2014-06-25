@@ -14,6 +14,9 @@
             <entry library-id="25d2abba-4dfb-4b34-ac36-4a9463343e5e">
               <dependency linkage="Test" />
             </entry>
+            <entry module-name="MedKit" build-configuration-name="MedKit">
+              <dependency linkage="Merged" />
+            </entry>
           </entries>
           <sdk name="AIR SDK 4.0" />
         </dependencies>
@@ -49,6 +52,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="MedKit" exported="" />
   </component>
 </module>
 

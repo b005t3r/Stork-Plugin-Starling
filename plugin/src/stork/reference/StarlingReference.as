@@ -6,6 +6,8 @@
 package stork.reference {
 import flash.utils.getDefinitionByName;
 
+import medkit.object.ObjectUtil;
+
 import starling.display.DisplayObject;
 import starling.display.DisplayObjectContainer;
 import starling.display.StorkRoot;
@@ -95,7 +97,7 @@ public class StarlingReference extends Reference {
             // class name
             if(pathPart.charCodeAt(0) == "@".charCodeAt(0)) {
                 pathPart = pathPart.substr(1, pathPart.length - 1);
-                pathPart = getFullClassName(pathPart);
+                pathPart = ObjectUtil.getFullClassName(pathPart);
                 var clazz:Class = getDefinitionByName(pathPart) as Class;
 
                 segment = new CompiledReferenceSegment(CompiledReferenceSegment.CLASS, clazz);
