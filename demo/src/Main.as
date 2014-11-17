@@ -7,7 +7,7 @@ import stork.starling.StarlingPlugin;
 
 [SWF(width="800", height="600", backgroundColor="#000000", frameRate="60")]
 public class Main extends Sprite {
-    var scene:SceneNode;
+    private var scene:SceneNode;
 
     public function Main() {
         scene = new SceneNode("Demo Scene");
