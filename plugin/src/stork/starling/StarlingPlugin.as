@@ -11,7 +11,6 @@ import flash.display.StageScaleMode;
 import flash.display3D.Context3DRenderMode;
 import flash.events.Event;
 import flash.geom.Rectangle;
-import flash.system.Capabilities;
 
 import starling.core.Starling;
 import starling.display.StorkRoot;
