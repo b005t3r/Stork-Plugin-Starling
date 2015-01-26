@@ -16,8 +16,11 @@ import starling.events.Event;
 import stork.core.Node;
 import stork.core.SceneNode;
 import stork.core.reference.Reference;
+import stork.core.stork_internal;
 import stork.event.Event;
 import stork.event.SceneObjectEvent;
+
+use namespace stork_internal;
 
 public class StarlingReference extends Reference {
     public static const TAG_NAME:String = "StarlingReference";
@@ -34,18 +37,18 @@ public class StarlingReference extends Reference {
         var sceneNode:SceneNode = _referencing.sceneNode;
 
         if(sceneNode == null) {
-            _referencing.addEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
+            _referencing.stork_internal::addReferenceEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
         }
         else {
-            _referencing.addEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
+            _referencing.stork_internal::addReferenceEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
 
             var root:StorkRoot = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
             if(root == null) {
-                sceneNode.addEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+                sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
             }
             else {
-                sceneNode.addEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+                sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
                 var child:DisplayObject = findReferenced(root);
 
@@ -62,14 +65,14 @@ public class StarlingReference extends Reference {
     }
 
     override public function dispose():void {
-        _referencing.removeEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
-        _referencing.removeEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
+        _referencing.stork_internal::removeReferenceEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
+        _referencing.stork_internal::removeReferenceEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
 
         var sceneNode:SceneNode = _referencing.sceneNode;
 
         if(sceneNode != null) {
-            sceneNode.removeEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
-            sceneNode.removeEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+            sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+            sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
             var root:StorkRoot = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
@@ -153,10 +156,14 @@ public class StarlingReference extends Reference {
 
             _referenced                 = value;
             _referencing[_propertyName] = value;
+
+            refreshReferenceHandlers(true);
         }
         else {
             if(_referenced == null)
                 throw new ArgumentError("referenced property already unset");
+
+            refreshReferenceHandlers(false);
 
             _referenced                 = null;
             _referencing[_propertyName] = null;
@@ -164,17 +171,17 @@ public class StarlingReference extends Reference {
     }
 
     private function onReferencingAddedToScene(event:stork.event.Event):void {
-        _referencing.removeEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
-        _referencing.addEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
+        _referencing.stork_internal::removeReferenceEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
+        _referencing.stork_internal::addReferenceEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
 
         var sceneNode:SceneNode = _referencing.sceneNode;
         var root:StorkRoot      = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
         if(root == null) {
-            sceneNode.addEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+            sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
         }
         else {
-            sceneNode.addEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+            sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
             var child:DisplayObject = findReferenced(root);
 
@@ -190,16 +197,16 @@ public class StarlingReference extends Reference {
     }
 
     private function onReferencingRemovedFromScene(event:stork.event.Event):void {
-        _referencing.removeEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
+        _referencing.stork_internal::removeReferenceEventListener(stork.event.Event.REMOVED_FROM_SCENE, onReferencingRemovedFromScene);
 
         var sceneNode:SceneNode = _referencing.sceneNode;
         var root:StorkRoot      = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
         if(root == null) {
-            sceneNode.removeEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+            sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
         }
         else {
-            sceneNode.removeEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+            sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
             if(_referenced == null) {
                 root.removeEventListener(starling.events.Event.ADDED, onSomethingAddedToRoot);
@@ -210,15 +217,15 @@ public class StarlingReference extends Reference {
             }
         }
 
-        _referencing.addEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
+        _referencing.stork_internal::addReferenceEventListener(stork.event.Event.ADDED_TO_SCENE, onReferencingAddedToScene);
     }
 
     private function onRootAddedToScene(event:SceneObjectEvent):void {
         var sceneNode:SceneNode = event.sceneNode;
         var root:StorkRoot      = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
-        sceneNode.removeEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
-        sceneNode.addEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+        sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+        sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
         var child:DisplayObject = findReferenced(root);
 
@@ -236,7 +243,7 @@ public class StarlingReference extends Reference {
         var sceneNode:SceneNode = event.sceneNode;
         var root:StorkRoot      = sceneNode.getObjectByClass(StorkRoot) as StorkRoot;
 
-        sceneNode.removeEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
+        sceneNode.stork_internal::removeReferenceEventListener(SceneObjectEvent.OBJECT_REMOVED_FROM_SCENE, onRootRemovedFromScene);
 
         if(_referenced == null) {
             root.removeEventListener(starling.events.Event.ADDED, onSomethingAddedToRoot);
@@ -246,7 +253,7 @@ public class StarlingReference extends Reference {
             setReferenced(null);
         }
 
-        sceneNode.addEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
+        sceneNode.stork_internal::addReferenceEventListener(SceneObjectEvent.OBJECT_ADDED_TO_SCENE, onRootAddedToScene);
     }
 
     private function onSomethingAddedToRoot(event:starling.events.Event):void {
