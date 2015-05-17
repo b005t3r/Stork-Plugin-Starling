@@ -81,7 +81,7 @@ public class StarlingPlugin extends ScenePlugin {
         _main.stage.align      = StageAlign.TOP_LEFT;
 
         Starling.multitouchEnabled      = true;
-        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, ["baseline", "baselineExtended"]);
+        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, "auto");
         _starling.simulateMultitouch    = _simulateMultitouch;
         _starling.enableErrorChecking   = _enableErrorChecking;
         _starling.antiAliasing          = _antiAliasing;
