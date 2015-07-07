@@ -114,7 +114,7 @@ public class StarlingPlugin extends ScenePlugin {
     }
 
     private function onResize(event:ResizeEvent):void {
-        if(_starling.root == null || _resizePolicy == null) return;
+        if(_resizePolicy == null) return;
 
         var viewPort:Rectangle = new Rectangle();
 
