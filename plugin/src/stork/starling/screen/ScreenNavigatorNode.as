@@ -27,7 +27,7 @@ public class ScreenNavigatorNode extends ContainerNode {
 
     public function get displayContainer():DisplayObjectContainer { throw new Error("abstract method call"); }
 
-    public function transition(oldScreen:ScreenNode, newScreen:ScreenNode, onComplete:Function):void {
+    public function transition(oldScreen:ScreenNode, newScreen:ScreenNode, animated:Boolean, onComplete:Function):void {
         onComplete();
     }
 
@@ -140,7 +140,7 @@ class Transition {
         newScreenTouchable = newScreen.display.touchable;
         newScreen.display.touchable = false;
 
-        owner.transition(oldScreen, newScreen, onPushTransitionComplete);
+        owner.transition(oldScreen, newScreen, animated, onPushTransitionComplete);
     }
 
     private function onPushTransitionComplete():void {
@@ -175,7 +175,7 @@ class Transition {
             newScreen.display.touchable = false;
         }
 
-        owner.transition(oldScreen, newScreen, onPopTransitionComplete);
+        owner.transition(oldScreen, newScreen, animated, onPopTransitionComplete);
     }
 
     private function onPopTransitionComplete():void {
