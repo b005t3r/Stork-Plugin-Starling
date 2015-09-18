@@ -168,7 +168,7 @@ class Transition {
         oldScreen.removeEventListener(ScreenEvent.DEACTIVATED, onPopScreenDeactivated);
 
         if(newScreen != null) {
-            owner.displayContainer.addChild(newScreen.display);
+            owner.displayContainer.addChildAt(newScreen.display, owner.displayContainer.numChildren - 1);
             newScreen.setUpDisplay(owner.displayContainer.width, owner.displayContainer.height);
 
             newScreenTouchable = newScreen.display.touchable;
