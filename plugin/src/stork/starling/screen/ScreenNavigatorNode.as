@@ -32,6 +32,9 @@ public class ScreenNavigatorNode extends ContainerNode {
     }
 
     public function pushScreen(screen:ScreenNode, animated:Boolean):void {
+        if(sceneNode == null)
+            throw new UninitializedError("screen navigator has to be added to SceneNode before pushing/popping any screens");
+
         if(_currentTransition != null)
             throw new IllegalOperationError("pushing a new screen before current transition completes");
 
@@ -40,6 +43,9 @@ public class ScreenNavigatorNode extends ContainerNode {
     }
 
     public function popScreen(animated:Boolean):ScreenNode {
+        if(sceneNode == null)
+            throw new UninitializedError("screen navigator has to be added to SceneNode before pushing/popping any screens");
+
         if(_currentTransition != null)
             throw new IllegalOperationError("popping a screen before current transition completes");
 
