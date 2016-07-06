@@ -19,7 +19,7 @@ public class SmartStretchPolicy implements IStageResizePolicy {
         _maxScale       = maxScale;
     }
 
-    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number):void {
+    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number, stageScaleFactor:Number):void {
         const w:Number          = _targetWidth;
         const h:Number          = _targetHeight;
 

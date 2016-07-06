@@ -15,9 +15,9 @@ public class ArbitraryScalePolicy implements IStageResizePolicy {
         _scale = scale;
     }
 
-    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number):void {
-        stage.stageWidth = newWidth / _scale;
-        stage.stageHeight = newHeight / _scale;
+    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number, stageScaleFactor:Number):void {
+        stage.stageWidth = newWidth / (_scale / stageScaleFactor);
+        stage.stageHeight = newHeight / (_scale / stageScaleFactor);
 
         viewPort.setTo(0, 0, newWidth, newHeight);
     }

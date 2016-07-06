@@ -9,7 +9,7 @@ import flash.geom.Rectangle;
 import starling.display.Stage;
 
 public class SimpleResizePolicy implements IStageResizePolicy {
-    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number):void {
+    public function resize(stage:Stage, viewPort:Rectangle, newWidth:Number, newHeight:Number, stageScaleFactor:Number):void {
         stage.stageWidth = newWidth;
         stage.stageHeight = newHeight;
 

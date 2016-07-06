@@ -36,12 +36,13 @@ public class StarlingPlugin extends ScenePlugin {
     private var _simulateMultitouch:Boolean;
     private var _enableErrorChecking:Boolean;
     private var _antiAliasing:int;
+    private var _wantsBestResolution:Boolean;
 
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
     }
 
-    public function StarlingPlugin(rootClass:Class, main:Sprite, resizePolicy:IStageResizePolicy = null, simulateMultitouch:Boolean = false, enableErrorChecking:Boolean = false, antiAliasing:int = 0) {
+    public function StarlingPlugin(rootClass:Class, main:Sprite, resizePolicy:IStageResizePolicy = null, simulateMultitouch:Boolean = false, enableErrorChecking:Boolean = false, antiAliasing:int = 0, wantsBestResolution:Boolean = true) {
         super(PLUGIN_NAME);
 
         if(rootClass is StorkRoot)
@@ -54,6 +55,7 @@ public class StarlingPlugin extends ScenePlugin {
         _simulateMultitouch     = simulateMultitouch;
         _enableErrorChecking    = enableErrorChecking;
         _antiAliasing           = antiAliasing;
+        _wantsBestResolution    = wantsBestResolution;
     }
 
     override public function activate():void {
@@ -80,16 +82,17 @@ public class StarlingPlugin extends ScenePlugin {
         _main.stage.scaleMode  = StageScaleMode.NO_SCALE;
         _main.stage.align      = StageAlign.TOP_LEFT;
 
-        Starling.multitouchEnabled      = true;
-        _starling                       = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, "auto");
-        _starling.simulateMultitouch    = _simulateMultitouch;
-        _starling.enableErrorChecking   = _enableErrorChecking;
-        _starling.antiAliasing          = _antiAliasing;
+        Starling.multitouchEnabled          = true;
+        _starling                           = new Starling(_rootClass, _main.stage, null, null, Context3DRenderMode.AUTO, "auto");
+        _starling.simulateMultitouch        = _simulateMultitouch;
+        _starling.enableErrorChecking       = _enableErrorChecking;
+        _starling.antiAliasing              = _antiAliasing;
+        _starling.supportHighResolutions    = _wantsBestResolution;
 
         if(_resizePolicy != null) {
             var viewPort:Rectangle = new Rectangle();
 
-            _resizePolicy.resize(_starling.stage, viewPort, _main.stage.stageWidth, _main.stage.stageHeight);
+            _resizePolicy.resize(_starling.stage, viewPort, _main.stage.stageWidth, _main.stage.stageHeight, 123123);
 
             _starling.viewPort = viewPort;
         }
@@ -118,7 +121,7 @@ public class StarlingPlugin extends ScenePlugin {
 
         var viewPort:Rectangle = new Rectangle();
 
-        _resizePolicy.resize(_starling.stage, viewPort, event.width, event.height);
+        _resizePolicy.resize(_starling.stage, viewPort, event.width, event.height, _main.stage.contentsScaleFactor);
 
         _starling.viewPort = viewPort;
     }
