@@ -57,6 +57,24 @@ public class ScreenNavigatorNode extends ContainerNode {
         return screen;
     }
 
+    public function popToScreen(screenClass:Class, animated:Boolean):ScreenNode {
+        var screensToSkip:int = 0;
+
+        for(var i:int = nodeCount - 2; i >= 0; --i) {
+            var screen:ScreenNode = ScreenNode(getNodeAt(i));
+
+            if(screen is screenClass)
+                break;
+
+            ++screensToSkip;
+        }
+
+        while(--screensToSkip >= 0)
+            previousScreen.removeFromParent();
+
+        return popScreen(animated);
+    }
+
     public function get currentScreen():ScreenNode {
         if(nodeCount == 0)
             return null;
