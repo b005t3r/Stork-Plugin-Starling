@@ -70,7 +70,7 @@ public class ScreenNavigatorNode extends ContainerNode {
         }
 
         while(--screensToSkip >= 0)
-            previousScreen.removeFromParent();
+            popScreen(false);
 
         return popScreen(animated);
     }
