@@ -29,7 +29,7 @@ public class ScreenNode extends Node {
     public function activate(animated:Boolean):void { throw new Error("abstract method call"); }
     public function deactivate(animated:Boolean):void { throw new Error("abstract method call"); }
 
-    protected function dispatchActivatedEvent():void { dispatchEvent(_activatedEvent.reset()); }
-    protected function dispatchDeactivatedEvent():void { dispatchEvent(_deactivatedEvent.reset()); }
+    protected function dispatchActivatedEvent(animated:Boolean):void { dispatchEvent(_activatedEvent.resetEvent(animated)); }
+    protected function dispatchDeactivatedEvent(animated:Boolean):void { dispatchEvent(_deactivatedEvent.resetEvent(animated)); }
 }
 }

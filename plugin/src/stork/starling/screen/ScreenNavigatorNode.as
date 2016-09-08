@@ -58,18 +58,7 @@ public class ScreenNavigatorNode extends ContainerNode {
     }
 
     public function popToScreen(screenClass:Class, animated:Boolean):ScreenNode {
-        var screensToSkip:int = 0;
-
-        for(var i:int = nodeCount - 2; i >= 0; --i) {
-            var screen:ScreenNode = ScreenNode(getNodeAt(i));
-
-            if(screen is screenClass)
-                break;
-
-            ++screensToSkip;
-        }
-
-        while(--screensToSkip >= 0)
+        while(previousScreen is screenClass == false && screenCount > 2)
             popScreen(false);
 
         return popScreen(animated);
@@ -183,7 +172,7 @@ class Transition {
 
         newScreen.display.touchable = newScreenTouchable;
 
-        owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen));
+        owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen, animated));
     }
 
     // pop an old screen
@@ -224,6 +213,6 @@ class Transition {
             newScreen.display.touchable = newScreenTouchable;
         }
 
-        owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen));
+        owner.dispatchEvent(new ScreenTransitionEvent(ScreenTransitionEvent.TRANSITION_COMPLETE).resetEvent(oldScreen, newScreen, animated));
     }
 }
