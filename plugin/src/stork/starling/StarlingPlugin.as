@@ -37,6 +37,7 @@ public class StarlingPlugin extends ScenePlugin {
     private var _enableErrorChecking:Boolean;
     private var _antiAliasing:int;
     private var _wantsBestResolution:Boolean;
+    private var _suspendOnDeactivate:Boolean;
 
     /* static initializer */ {
         ReferenceUtil.registerReferenceClass(StarlingReference, StarlingReference.TAG_NAME);
@@ -57,6 +58,9 @@ public class StarlingPlugin extends ScenePlugin {
         _antiAliasing           = antiAliasing;
         _wantsBestResolution    = wantsBestResolution;
     }
+
+    public function get suspendOnDeactivate():Boolean { return _suspendOnDeactivate; }
+    public function set suspendOnDeactivate(value:Boolean):void { _suspendOnDeactivate = value; }
 
     override public function activate():void {
         if(_main == null)
@@ -126,7 +130,14 @@ public class StarlingPlugin extends ScenePlugin {
         _starling.viewPort = viewPort;
     }
 
-    private function onActivate(event:flash.events.Event):void { _starling.start(); }
-    private function onDeactivate(event:flash.events.Event):void { _starling.stop(true); }
+    private function onActivate(event:flash.events.Event):void {
+        if(_suspendOnDeactivate)
+            _starling.start();
+    }
+
+    private function onDeactivate(event:flash.events.Event):void {
+        if(_suspendOnDeactivate)
+            _starling.stop(true);
+    }
 }
 }
