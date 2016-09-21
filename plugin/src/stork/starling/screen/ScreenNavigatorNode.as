@@ -59,7 +59,7 @@ public class ScreenNavigatorNode extends ContainerNode {
 
     public function popToScreen(screenClass:Class, animated:Boolean):ScreenNode {
         while(previousScreen is screenClass == false && screenCount > 2)
-            popScreen(false);
+            previousScreen.removeFromParent();
 
         return popScreen(animated);
     }
